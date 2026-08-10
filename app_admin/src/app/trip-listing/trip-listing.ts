@@ -31,6 +31,10 @@ export class TripListingComponent implements OnInit {
     this.router.navigate(['add-trip']);
   }
 
+  public onTripDeleted(): void {
+    this.getStuff();
+  }
+
   ngOnInit(): void {
     console.log('ngOnInit');
     this.getStuff();
