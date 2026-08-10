@@ -1,0 +1,63 @@
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TripCardComponent } from '../trip-card/trip-card';
+import { Trip } from '../models/trip';
+import { TripDataService } from '../services/trip-data';
+import { Router } from '@angular/router';
+
+
+@Component({
+  selector: 'app-trip-listing',
+  standalone: true,
+  imports: [CommonModule, TripCardComponent],
+  templateUrl: './trip-listing.html',
+  styleUrl: './trip-listing.css',
+  providers: [TripDataService]
+})
+export class TripListingComponent implements OnInit {
+
+  trips: Trip[] = [];
+  message: string = '';
+
+  constructor(
+    private tripDataService: TripDataService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {
+    console.log('trip-listing constructor');
+  }
+
+  public addTrip(): void {
+    this.router.navigate(['add-trip']);
+  }
+
+  public onTripDeleted(): void {
+    this.getStuff();
+  }
+
+  ngOnInit(): void {
+    console.log('ngOnInit');
+    this.getStuff();
+  }
+
+  private getStuff(): void {
+    this.tripDataService.getTrips()
+      .subscribe({
+        next: (value: Trip[]) => {
+          this.trips = value;
+          if (value.length > 0) {
+            this.message = 'There are ' + value.length + ' trips available.';
+          } else {
+            this.message = 'There were no trips retrieved from the database';
+          }
+          console.log(this.message);
+          // Http response was not triggering view refresh under Angular 22/zone;
+          // force the template (*ngFor cards + Edit buttons) to re-render.
+          this.cdr.detectChanges();
+        },
+        error: (error: any) => {
+          console.log('Error: ' + error);
+        }
+      });
+  }
+}
