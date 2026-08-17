@@ -1,0 +1,81 @@
+@startuml Travlr_Getaways_Sequence_Diagram
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 180
+
+actor "Browser\n(Public / Admin SPA)" as Browser
+participant "Express\nRoute" as Route
+participant "Controller" as Controller
+participant "Passport\nLocal Strategy" as Passport
+participant "authenticateJWT\nMiddleware" as Auth
+participant "Mongoose\nModel" as Model
+database "MongoDB" as DB
+
+== Public User - View All Trips ==
+
+Browser -> Route : GET /travel
+Route -> Controller : travelController.travel()
+Controller -> Route : HTTP GET /api/trips\n(server-side fetch, no JWT)
+Route -> Controller : tripsController.tripsList()
+Controller -> Model : Trip.find({})
+Model -> DB : Query trips collection
+DB --> Model : Return trip documents
+Model --> Controller : Trip array
+Controller --> Route : 200 + JSON
+Route --> Controller : Trip JSON
+Controller --> Browser : Render travel.hbs with trips
+
+note right of Route
+  GET /api/trips is public.
+  authenticateJWT is not used.
+end note
+
+== Admin - Login (Authentication) ==
+
+Browser -> Route : POST /api/login\n(email, password)
+note left of Browser
+  Angular Login component
+  -> AuthenticationService
+  -> TripDataService
+end note
+Route -> Controller : authController.login()
+Controller -> Passport : passport.authenticate('local')
+Passport -> Model : User.findOne({ email })
+Model -> DB : Find user
+DB --> Model : User document
+Model --> Passport : User
+Passport -> Passport : user.validPassword(password)
+Passport --> Controller : user (success)
+Controller -> Controller : user.generateJWT()
+Controller --> Browser : 200 { token }
+
+== Admin - Update Trip (Protected CRUD) ==
+
+Browser -> Route : PUT /api/trips/:tripCode\nAuthorization: Bearer <JWT>
+note left of Browser
+  Angular JwtInterceptor
+  attaches the Bearer token
+end note
+Route -> Auth : authenticateJWT middleware
+Auth -> Auth : jwt.verify(token, JWT_SECRET)
+Auth --> Route : Token valid -> next()
+Route -> Controller : tripsController.tripsUpdateTrip()
+Controller -> Model : Trip.findOneAndUpdate(...)
+Model -> DB : Update document
+DB --> Model : Updated trip
+Model --> Controller : Updated document
+Controller --> Browser : 200 OK + JSON
+
+note right of Auth
+  POST /api/trips and
+  DELETE /api/trips/:tripCode
+  use the same middleware.
+end note
+
+== Unauthenticated Request (Security) ==
+
+Browser -> Route : PUT /api/trips/:tripCode\n(No Authorization header)
+Route -> Auth : authenticateJWT middleware
+Auth --> Browser : 401 Unauthorized
+
+@enduml
