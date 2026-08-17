@@ -1,29 +1,29 @@
 <div id="header">
 	<div id="logo">
-		<a href="/"><img src="images/logo.png" alt="LOGO" height="100" width="200"></a>
+		<a href="/"><img src="/images/logo.png" alt="LOGO" height="100" width="200"></a>
 	</div>
 	<div id="navigation">
 		<ul>
-			<li class="selected">
+			<li class="{{isActive page 'home' 'selected'}}">
 				<a href="/">Home</a>
 			</li>
-			<li>
+			<li class="{{isActive page 'travel' 'selected'}}">
 				<a href="/travel">Travel</a>
 			</li>
-			<li>
-				<a href="rooms.html">Rooms</a>
+			<li class="{{isActive page 'rooms' 'selected'}}">
+				<a href="/rooms">Rooms</a>
 			</li>
-			<li>
-				<a href="meals.html">Meals</a>
+			<li class="{{isActive page 'meals' 'selected'}}">
+				<a href="/meals">Meals</a>
 			</li>
-			<li>
-				<a href="news.html">News</a>
+			<li class="{{isActive page 'news' 'selected'}}">
+				<a href="/news">News</a>
 			</li>
-			<li>
-				<a href="about.html">About</a>
+			<li class="{{isActive page 'about' 'selected'}}">
+				<a href="/about">About</a>
 			</li>
-			<li>
-				<a href="contact.html">Contact</a>
+			<li class="{{isActive page 'contact' 'selected'}}">
+				<a href="/contact">Contact</a>
 			</li>
 		</ul>
 	</div>

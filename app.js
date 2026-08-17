@@ -32,12 +32,14 @@ app.set('view engine', 'hbs');
 var travelRouter = require('./app_server/routes/travel');
 app.use('/travel', travelRouter);
 hbs.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
+hbs.registerHelper('isActive', function(page, name, activeClass) {
+  return page === name ? activeClass : '';
+});
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
 // Enable CORS so the Angular app (port 4200) can talk to the API (port 3000)
@@ -54,6 +56,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 

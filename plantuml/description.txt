@@ -1,0 +1,57 @@
+@startuml Travlr_Getaways_Sequence_Diagram
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam maxMessageSize 180
+
+actor "Browser\n(Public / Admin SPA)" as Browser
+participant "Express\nRoute" as Route
+participant "Controller" as Controller
+participant "authenticateJWT\nMiddleware" as Auth
+participant "Mongoose\nModel" as Model
+database "MongoDB" as DB
+
+== Public User – View All Trips ==
+
+Browser -> Route : GET /travel
+Route -> Controller : travelController.travel()
+Controller -> Route : GET /api/trips
+Route -> Controller : tripsController.tripsList()
+Controller -> Model : Trip.find({})
+Model -> DB : Query trips collection
+DB --> Model : Return trip documents
+Model --> Controller : Trip array
+Controller --> Route : JSON response
+Route --> Controller : Pass data to Handlebars
+Controller --> Browser : Rendered HTML (Travel page)
+
+== Admin – Login (Authentication) ==
+
+Browser -> Route : POST /api/login\n(email, password)
+Route -> Controller : authController.login()
+Controller -> Model : User.findOne({ email })
+Model -> DB : Find user
+DB --> Model : User document
+Model --> Controller : User + validPassword()
+Controller --> Browser : JWT token
+
+== Admin – Update Trip (Protected CRUD) ==
+
+Browser -> Route : PUT /api/trips/:tripCode\n(Authorization: Bearer <JWT>)
+Route -> Auth : authenticateJWT middleware
+Auth -> Auth : Verify JWT signature & expiry
+Auth -> Route : Token valid → next()
+Route -> Controller : tripsController.tripsUpdateTrip()
+Controller -> Model : Trip.findOneAndUpdate(...)
+Model -> DB : Update document
+DB --> Model : Updated trip
+Model --> Controller : Updated document
+Controller --> Browser : 200 OK + JSON
+
+== Unauthenticated Request (Security) ==
+
+Browser -> Route : PUT /api/trips/:tripCode\n(No Authorization header)
+Route -> Auth : authenticateJWT middleware
+Auth --> Browser : 401 Unauthorized
+
+@enduml

@@ -334,6 +334,8 @@ hr {
 	float: right;
 	border: 1px solid #2c9688;
 	margin-left: 15px;
+	max-width: 398px;
+	height: auto;
 }
 /** News **/
 #news {
