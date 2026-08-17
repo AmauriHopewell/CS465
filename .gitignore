@@ -59,6 +59,9 @@ local.properties
 # Typically, this file would be tracked if it contains build/dependency configurations:
 #.project
 
+# Environment secrets — never commit JWT secrets or local env files
+.env
+
 # VS Code working files
 .vscode/*
 !.vscode/settings.json

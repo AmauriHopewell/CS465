@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TripCardComponent } from '../trip-card/trip-card';
 import { Trip } from '../models/trip';
 import { TripDataService } from '../services/trip-data';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '../services/authentication';
 
 
 @Component({
@@ -18,6 +19,8 @@ export class TripListingComponent implements OnInit {
 
   trips: Trip[] = [];
   message: string = '';
+  private authenticationService = inject(AuthenticationService);
+  readonly loggedIn = this.authenticationService.loggedIn;
 
   constructor(
     private tripDataService: TripDataService,
@@ -29,6 +32,10 @@ export class TripListingComponent implements OnInit {
 
   public addTrip(): void {
     this.router.navigate(['add-trip']);
+  }
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
   }
 
   public onTripDeleted(): void {
