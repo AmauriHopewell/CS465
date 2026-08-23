@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TripDataService } from '../services/trip-data';
+import { AuthenticationService } from '../services/authentication';
 
 @Component({
   selector: 'app-trip-card',
@@ -13,6 +14,8 @@ import { TripDataService } from '../services/trip-data';
 export class TripCardComponent implements OnInit {
   @Input('trip') trip: any;
   @Output() tripDeleted = new EventEmitter<void>();
+  private authenticationService = inject(AuthenticationService);
+  readonly loggedIn = this.authenticationService.loggedIn;
 
   constructor(
     private router: Router,
@@ -20,6 +23,11 @@ export class TripCardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
+
+  public isLoggedIn()
+  {
+    return this.authenticationService.isLoggedIn();
+  }
 
   public editTrip(trip: any): void {
     localStorage.removeItem('tripCode');

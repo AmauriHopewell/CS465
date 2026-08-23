@@ -14,7 +14,7 @@
 
     <p class="card-text" [innerHTML]="trip.description"></p>
 
-    <button class="btn btn-info me-2" (click)="editTrip(trip)">Edit</button>
-    <button class="btn btn-danger" (click)="deleteTrip(trip)">Delete</button>
+    <button class="btn btn-info me-2" *ngIf="loggedIn()" (click)="editTrip(trip)">Edit</button>
+    <button class="btn btn-danger" *ngIf="loggedIn()" (click)="deleteTrip(trip)">Delete</button>
   </div>
 </div>
